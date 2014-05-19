@@ -28,6 +28,7 @@ public class MainActivity extends Activity {
         for (int i = 0; i < Consts.SUDOKU_GRID_SIZE; i++) {
             Log.d("gensu", "row " + i + " is valid " +  grid.isValidRow(i));
             Log.d("gensu", "column " + i + " is valid " +  grid.isValidColumn(i));
+            Log.d("gensu", "subgrid " + i + " is valid " + grid.getSubgrid(i / 3, i % 3).isSubgridValid());
         }
     }
 }

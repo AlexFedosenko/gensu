@@ -19,6 +19,17 @@ public class SudokuGrid {
             mSubgrids = new SudokuSubgrid[Consts.SUDOKU_SUBGRID_SIZE][Consts.SUDOKU_SUBGRID_SIZE];
 
             // generate subgrids
+            for (int i = 0; i < Consts.SUDOKU_GRID_SIZE / Consts.SUDOKU_SUBGRID_SIZE; i++) {
+                for (int j = 0; j < Consts.SUDOKU_GRID_SIZE / Consts.SUDOKU_SUBGRID_SIZE; j++) {
+                    int[][] subgrid = new int[Consts.SUDOKU_SUBGRID_SIZE][Consts.SUDOKU_SUBGRID_SIZE];
+                    for (int k = 0; k < Consts.SUDOKU_SUBGRID_SIZE; k++) {
+                        for (int l = 0; l < Consts.SUDOKU_SUBGRID_SIZE; l++) {
+                            subgrid[k][l] = mGrid[i * Consts.SUDOKU_SUBGRID_SIZE + k][j * Consts.SUDOKU_SUBGRID_SIZE + l];
+                        }
+                    }
+                    mSubgrids[i][j] = new SudokuSubgrid(subgrid);
+                }
+            }
         } else {
             Log.e(this.getClass().getSimpleName(), "Illegal grid size");
         }
@@ -46,6 +57,10 @@ public class SudokuGrid {
             }
         }
         return true;
+    }
+
+    public SudokuSubgrid getSubgrid(int row, int column) {
+        return mSubgrids[row][column];
     }
 
     public void calculateVariants() {

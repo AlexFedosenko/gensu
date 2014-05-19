@@ -3,6 +3,7 @@ package kpi.fiot.gensu.core;
 import android.util.Log;
 import kpi.fiot.gensu.utils.Consts;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public class SudokuSubgrid {
@@ -18,7 +19,7 @@ public class SudokuSubgrid {
     }
 
     public boolean isSubgridValid() {
-        Set<Integer> possibleDigits = Consts.ALLOWED_DIGITS;
+        Set<Integer> possibleDigits = new HashSet<Integer>(Consts.ALLOWED_DIGITS);
         for (int i = 0; i < Consts.SUDOKU_SUBGRID_SIZE; i++) {
             for (int j = 0; j < Consts.SUDOKU_SUBGRID_SIZE; j++) {
                 if (mSubgrid[i][j] == 0 || possibleDigits.contains(mSubgrid[i][j])) {
