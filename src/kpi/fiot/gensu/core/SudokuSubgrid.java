@@ -32,4 +32,13 @@ public class SudokuSubgrid {
         return true;
     }
 
+    public Set<Integer> calculateCelVariants(Set<Integer> allowedDigits) {
+        for (int i = 0; i < Consts.SUDOKU_SUBGRID_SIZE; i++) {
+            for (int j = 0; j < Consts.SUDOKU_SUBGRID_SIZE; j++) {
+                allowedDigits.remove(mSubgrid[i][j]);
+            }
+        }
+        return allowedDigits;
+    }
+
 }
