@@ -35,6 +35,7 @@ public class MainActivity extends Activity {
         }
 
         SolveHelper helper = new SolveHelper();
-        helper.solveWithOpenDigits(grid);
+//        helper.solveWithOpenDigits(grid);
+        helper.solveWithHiddenDigits(grid);
     }
 }

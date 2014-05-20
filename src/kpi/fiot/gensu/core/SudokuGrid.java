@@ -4,14 +4,13 @@ import android.util.Log;
 import kpi.fiot.gensu.utils.Consts;
 
 import java.util.HashSet;
-import java.util.IllegalFormatException;
 import java.util.Set;
 
 public class SudokuGrid {
 
     private int[][] mGrid;
     private SudokuSubgrid[][] mSubgrids;
-    private HashSet[][] mVariants;
+    private HashSet[][] mCandidates;
 
     public SudokuGrid(int[][] grid) {
         if (grid.length == Consts.SUDOKU_GRID_SIZE && grid[0].length == Consts.SUDOKU_GRID_SIZE) {
@@ -24,16 +23,21 @@ public class SudokuGrid {
         }
     }
 
-    private void generateSubgrids() {
+    public void generateSubgrids() {
         for (int i = 0; i < Consts.SUDOKU_GRID_SIZE / Consts.SUDOKU_SUBGRID_SIZE; i++) {
             for (int j = 0; j < Consts.SUDOKU_GRID_SIZE / Consts.SUDOKU_SUBGRID_SIZE; j++) {
                 int[][] subgrid = new int[Consts.SUDOKU_SUBGRID_SIZE][Consts.SUDOKU_SUBGRID_SIZE];
+                HashSet[][] candidates = new HashSet[Consts.SUDOKU_SUBGRID_SIZE][Consts.SUDOKU_SUBGRID_SIZE];
                 for (int k = 0; k < Consts.SUDOKU_SUBGRID_SIZE; k++) {
                     for (int l = 0; l < Consts.SUDOKU_SUBGRID_SIZE; l++) {
                         subgrid[k][l] = mGrid[i * Consts.SUDOKU_SUBGRID_SIZE + k][j * Consts.SUDOKU_SUBGRID_SIZE + l];
+                        if (mCandidates != null) {
+                            candidates[k][l] = mCandidates[i * Consts.SUDOKU_SUBGRID_SIZE + k][j * Consts.SUDOKU_SUBGRID_SIZE + l];
+                        }
                     }
                 }
                 mSubgrids[i][j] = new SudokuSubgrid(subgrid);
+                mSubgrids[i][j].setCandidates(candidates);
             }
         }
     }
@@ -69,8 +73,8 @@ public class SudokuGrid {
     /**
      * Check validity before variants calculating
      */
-    public void calculateVariants() {
-        mVariants = new HashSet[Consts.SUDOKU_GRID_SIZE][Consts.SUDOKU_GRID_SIZE];
+    public void calculateCandidates() {
+        mCandidates = new HashSet[Consts.SUDOKU_GRID_SIZE][Consts.SUDOKU_GRID_SIZE];
         for (int i = 0; i < Consts.SUDOKU_GRID_SIZE; i++) {
             for (int j = 0; j < Consts.SUDOKU_GRID_SIZE; j++) {
                 if (mGrid[i][j] == 0) {
@@ -81,9 +85,9 @@ public class SudokuGrid {
                     if (variants.isEmpty()) {
                         Log.d(Consts.TAG, "No variants, sudoku is unresolvable");
                     }
-                    mVariants[i][j] = (HashSet) variants;
+                    mCandidates[i][j] = (HashSet) variants;
                 } else {
-                    mVariants[i][j] = null;
+                    mCandidates[i][j] = null;
                 }
             }
         }
@@ -100,8 +104,8 @@ public class SudokuGrid {
         return allowedDigits;
     }
 
-    public HashSet[][] getVariants() {
-        return mVariants;
+    public HashSet[][] getCandidates() {
+        return mCandidates;
     }
 
     public void setGridCellValue(int value, int row, int column) {
@@ -114,15 +118,40 @@ public class SudokuGrid {
     }
 
     public boolean hasUnambiguousChoice() {
-        calculateVariants();
+        calculateCandidates();
 
-        for (int i = 0; i < mVariants.length; i++) {
-            for (int j = 0; j < mVariants[i].length; j++) {
-                if (mVariants[i][j] != null && mVariants[i][j].size() == 1) {
+        for (int i = 0; i < mCandidates.length; i++) {
+            for (int j = 0; j < mCandidates[i].length; j++) {
+                if (mCandidates[i][j] != null && mCandidates[i][j].size() == 1) {
                     return true;
                 }
             }
         }
         return false;
     }
+
+    public Set<Integer> getUniqueCandidates(int row, int column) {
+        if (mCandidates == null || mCandidates[row][column] == null) {
+            return null;
+        }
+
+        Set<Integer> uniqueCandidates = new HashSet<Integer>(mCandidates[row][column]);
+
+        for (int i = 0; i < Consts.SUDOKU_GRID_SIZE; i++) {
+            if (i != row && mCandidates[i][column] != null) {
+                uniqueCandidates.removeAll(mCandidates[i][column]);
+            }
+        }
+
+        for (int i = 0; i < Consts.SUDOKU_GRID_SIZE; i++) {
+            if (i != column && mCandidates[row][i] != null) {
+                uniqueCandidates.removeAll(mCandidates[row][i]);
+            }
+        }
+
+        uniqueCandidates = mSubgrids[row / 3][column / 3].getUniqueCandidates(uniqueCandidates, row % 3, column % 3);
+
+        return uniqueCandidates;
+    }
+
 }

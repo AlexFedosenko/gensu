@@ -9,6 +9,7 @@ import java.util.Set;
 public class SudokuSubgrid {
 
     private int[][] mSubgrid;
+    private HashSet[][] mCandidates;
 
     public SudokuSubgrid(int[][] grid) {
         if (grid.length == Consts.SUDOKU_SUBGRID_SIZE && grid[0].length == Consts.SUDOKU_SUBGRID_SIZE) {
@@ -16,6 +17,10 @@ public class SudokuSubgrid {
         } else {
             Log.e(this.getClass().getSimpleName(), "Illegal grid size");
         }
+    }
+
+    public void setCandidates(HashSet[][] candidates) {
+        mCandidates = candidates;
     }
 
     public boolean isSubgridValid() {
@@ -39,6 +44,20 @@ public class SudokuSubgrid {
             }
         }
         return allowedDigits;
+    }
+
+    public Set<Integer> getUniqueCandidates(Set<Integer> uniqueCandidates, int row, int column) {
+        if (uniqueCandidates == null || uniqueCandidates.isEmpty()) {
+            return uniqueCandidates;
+        }
+        for (int i = 0; i < Consts.SUDOKU_SUBGRID_SIZE; i++) {
+            for (int j = 0; j < Consts.SUDOKU_SUBGRID_SIZE; j++) {
+                if (i != row && j != column && mCandidates[i][j] != null) {
+                    uniqueCandidates.removeAll(mCandidates[i][j]);
+                }
+            }
+        }
+        return uniqueCandidates;
     }
 
 }
