@@ -52,7 +52,7 @@ public class SudokuSubgrid {
         }
         for (int i = 0; i < Consts.SUDOKU_SUBGRID_SIZE; i++) {
             for (int j = 0; j < Consts.SUDOKU_SUBGRID_SIZE; j++) {
-                if (i != row && j != column && mCandidates[i][j] != null) {
+                if ((i != row || j != column) && mCandidates[i][j] != null) {
                     uniqueCandidates.removeAll(mCandidates[i][j]);
                 }
             }

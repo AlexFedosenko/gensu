@@ -137,17 +137,17 @@ public class SudokuGrid {
 
         Set<Integer> uniqueCandidates = new HashSet<Integer>(mCandidates[row][column]);
 
-        for (int i = 0; i < Consts.SUDOKU_GRID_SIZE; i++) {
-            if (i != row && mCandidates[i][column] != null) {
-                uniqueCandidates.removeAll(mCandidates[i][column]);
-            }
-        }
-
-        for (int i = 0; i < Consts.SUDOKU_GRID_SIZE; i++) {
-            if (i != column && mCandidates[row][i] != null) {
-                uniqueCandidates.removeAll(mCandidates[row][i]);
-            }
-        }
+//        for (int i = 0; i < Consts.SUDOKU_GRID_SIZE; i++) {
+//            if (i != row && mCandidates[i][column] != null) {
+//                uniqueCandidates.removeAll(mCandidates[i][column]);
+//            }
+//        }
+//
+//        for (int i = 0; i < Consts.SUDOKU_GRID_SIZE; i++) {
+//            if (i != column && mCandidates[row][i] != null) {
+//                uniqueCandidates.removeAll(mCandidates[row][i]);
+//            }
+//        }
 
         uniqueCandidates = mSubgrids[row / 3][column / 3].getUniqueCandidates(uniqueCandidates, row % 3, column % 3);
 
