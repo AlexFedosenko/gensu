@@ -6,11 +6,10 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
@@ -20,6 +19,7 @@ import android.widget.Toast;
 import kpi.fiot.gensu.core.SolveHelper;
 import kpi.fiot.gensu.core.SudokuGrid;
 import kpi.fiot.gensu.utils.Consts;
+import kpi.fiot.gensu.utils.Utility;
 
 import java.io.File;
 
@@ -83,6 +83,35 @@ public class MainActivity extends Activity implements View.OnClickListener{
 
         Button btnPhoto = (Button) findViewById(R.id.btn_photo);
         btnPhoto.setOnClickListener(this);
+
+        File photo = new File(Environment.getExternalStorageDirectory(),  "Sudoku.jpg");
+        Uri selectedImage = Uri.fromFile(photo);
+        getContentResolver().notifyChange(selectedImage, null);
+        final ImageView imageView = (ImageView) findViewById(R.id.image);
+        ContentResolver cr = getContentResolver();
+        Bitmap bitmap;
+        try {
+            bitmap = android.provider.MediaStore.Images.Media
+                    .getBitmap(cr, selectedImage);
+
+            final Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2, false);
+
+            imageView.setImageBitmap(bitmap1);
+            Handler handler = new Handler(getMainLooper());
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+
+                    imageView.setImageBitmap(Utility.convertToMonochrome(bitmap1));
+                }
+            }, 0);
+            Toast.makeText(this, selectedImage.toString(),
+                    Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            Toast.makeText(this, "Failed to load", Toast.LENGTH_SHORT)
+                    .show();
+            Log.e("Camera", e.toString());
+        }
     }
 
     @Override
@@ -111,14 +140,24 @@ public class MainActivity extends Activity implements View.OnClickListener{
                     File photo = new File(Environment.getExternalStorageDirectory(),  "Sudoku.jpg");
                     Uri selectedImage = Uri.fromFile(photo);
                     getContentResolver().notifyChange(selectedImage, null);
-                    ImageView imageView = (ImageView) findViewById(R.id.image);
+                    final ImageView imageView = (ImageView) findViewById(R.id.image);
                     ContentResolver cr = getContentResolver();
                     Bitmap bitmap;
                     try {
                         bitmap = android.provider.MediaStore.Images.Media
                                 .getBitmap(cr, selectedImage);
 
+                        final Bitmap bitmap1 = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 2, bitmap.getHeight() / 2, false);
+
                         imageView.setImageBitmap(bitmap);
+                        Handler handler = new Handler(getMainLooper());
+                        handler.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+
+                                imageView.setImageBitmap(Utility.convertToMonochrome(bitmap1));
+                            }
+                        }, 10000);
                         Toast.makeText(this, selectedImage.toString(),
                                 Toast.LENGTH_LONG).show();
                     } catch (Exception e) {

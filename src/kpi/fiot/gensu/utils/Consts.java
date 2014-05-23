@@ -13,4 +13,6 @@ public class Consts {
 
     public static final int SUDOKU_GRID_SIZE = 9;
     public static final int SUDOKU_SUBGRID_SIZE = 3;
+
+    public static final int LOCAL_RADIUS = 20;
 }
